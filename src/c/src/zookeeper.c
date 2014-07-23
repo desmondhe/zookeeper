@@ -1701,7 +1701,7 @@ static int send_info_packet(zhandle_t *zh, auth_info* auth) {
     rc = rc < 0 ? rc : queue_front_buffer_bytes(&zh->to_send, get_buffer(oa),
             get_buffer_len(oa));
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     return rc;
 }
@@ -1782,7 +1782,7 @@ static int send_set_watches(zhandle_t *zh)
     rc = rc < 0 ? rc : queue_front_buffer_bytes(&zh->to_send, get_buffer(oa),
             get_buffer_len(oa));
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
     free_key_list(req.dataWatches.data, req.dataWatches.count);
     free_key_list(req.existWatches.data, req.existWatches.count);
     free_key_list(req.childWatches.data, req.childWatches.count);
@@ -1935,7 +1935,7 @@ static struct timeval get_timeval(int interval)
     rc = rc < 0 ? rc : queue_buffer_bytes(&zh->to_send, get_buffer(oa),
             get_buffer_len(oa));
     leave_critical(zh);
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
     return rc<0 ? rc : adaptor_send_queue(zh, 0);
 }
 
@@ -3169,7 +3169,7 @@ int zookeeper_close(zhandle_t *zh)
         rc = rc < 0 ? rc : queue_buffer_bytes(&zh->to_send, get_buffer(oa),
                 get_buffer_len(oa));
         /* We queued the buffer, so don't free it */
-        close_buffer_oarchive(&oa, 0);
+        close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
         if (rc < 0) {
             rc = ZMARSHALLINGERROR;
             goto finish;
@@ -3310,7 +3310,7 @@ int zoo_awget(zhandle_t *zh, const char *path,
     leave_critical(zh);
     free_duplicate_path(server_path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3354,7 +3354,7 @@ int zoo_awgetconfig(zhandle_t *zh, watcher_fn watcher, void* watcherCtx,
     leave_critical(zh);
     free_duplicate_path(server_path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
                zoo_get_current_server(zh));
@@ -3391,7 +3391,7 @@ int zoo_areconfig(zhandle_t *zh, const char *joining, const char *leaving,
             get_buffer_len(oa));
     leave_critical(zh);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending Reconfig request xid=%#x to %s",h.xid, zoo_get_current_server(zh));
     /* make a best (non-blocking) effort to send the requests asap */
@@ -3436,7 +3436,7 @@ int zoo_aset(zhandle_t *zh, const char *path, const char *buffer, int buflen,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3516,7 +3516,7 @@ int zoo_acreate(zhandle_t *zh, const char *path, const char *value,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3547,7 +3547,7 @@ int zoo_acreate2(zhandle_t *zh, const char *path, const char *value,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3587,7 +3587,7 @@ int zoo_adelete(zhandle_t *zh, const char *path, int version,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3626,7 +3626,7 @@ int zoo_awexists(zhandle_t *zh, const char *path,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3659,7 +3659,7 @@ static int zoo_awget_children_(zhandle_t *zh, const char *path,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3707,7 +3707,7 @@ static int zoo_awget_children2_(zhandle_t *zh, const char *path,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3750,7 +3750,7 @@ int zoo_async(zhandle_t *zh, const char *path,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3780,7 +3780,7 @@ int zoo_aget_acl(zhandle_t *zh, const char *path, acl_completion_t completion,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3811,7 +3811,7 @@ int zoo_aset_acl(zhandle_t *zh, const char *path, int version,
     leave_critical(zh);
     free_duplicate_path(req.path, path);
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",h.xid,path,
             zoo_get_current_server(zh));
@@ -3971,7 +3971,7 @@ int zoo_amulti(zhandle_t *zh, int count, const zoo_op_t *ops,
     leave_critical(zh);
 
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending multi request xid=%#x with %d subrequests to %s",
             h.xid, index, zoo_get_current_server(zh));
@@ -4687,7 +4687,7 @@ int zoo_aremove_watchers(zhandle_t *zh, const char *path, ZooWatcherType wtype,
     leave_critical(zh);
 
     /* We queued the buffer, so don't free it */
-    close_buffer_oarchive(&oa, 0);
+    close_buffer_oarchive(&oa, rc < 0 ? 1 : 0);
 
     LOG_DEBUG(LOGCALLBACK(zh), "Sending request xid=%#x for path [%s] to %s",
               h.xid, path, zoo_get_current_server(zh));
